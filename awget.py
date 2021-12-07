@@ -57,28 +57,27 @@ except:
     print("Unable to read file.")
     exit()
 
+print(f"Request: {sys.argv[1]}")
+print("Chainlist is")
+
 for i in range(len(chainGang)):
     if (i == 0):
         chainGang[i] = int(chainGang[i])
         continue
         
     address, port = chainGang[i].split(" ")
-    port = port[0: len(port)]
-    chainGang[i] = ((address, port))
+    port = port[0: int(port)]
+    chainGang[i] = (address, int(port))
+    print(f"<{address}, {int(port)}>")
 
 randomNum = random.randint(1, int(chainGang[0]))
 
 address, port = chainGang[randomNum]
 
-print(f"Request: {sys.argv[1]}")
-print("Chainlist is")
-for i in range(len(chainGang)):
-    print(chainGang[i])
-
 chainGang.pop(randomNum)
 chainGang[0] = chainGang[0] - 1
 
-print(f"Next SS is <{address},{port}>")
+print(f"Next SS is <{address},{int(port)}>")
 
 chainGang.append(sys.argv[1])
 
@@ -94,7 +93,6 @@ try:
             receive = s.recv(1024).decode()
             if(receive == ""):
                 break
-            print("Relaying file")
             fp.write(receive)
     print("Goodbye!")
     s.close()
