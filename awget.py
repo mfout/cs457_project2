@@ -82,10 +82,11 @@ print(f"Next SS is <{address},{port}>")
 
 chainGang.append(sys.argv[1])
 
-
 try:
     s = socket(AF_INET, SOCK_STREAM)
-    s.connect((address, int(port)))
+    print(f"Connecting to {address}:{port}")
+    s.connect_ex((address, int(port)))
+    print("Connected")
     s.send(str(chainGang).encode())
     print("Waiting for file")
     with open(fileName, 'w') as fp:
