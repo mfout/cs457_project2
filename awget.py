@@ -43,6 +43,13 @@ if ((sys.argv[1].rfind('/') == len(sys.argv[1]) - 1) or (sys.argv[1].rfind('/') 
 else:
     fileName = sys.argv[1][sys.argv[1].rfind('/'): len(sys.argv[1])]
 
+def listToString(chainList):
+    chainStr = ""
+    for i in chainList:
+        print(f"line: {chainList[i]}")
+        chainStr += chainList[i]
+    return chainStr
+
 chainGang = []
 
 try:
@@ -57,8 +64,10 @@ except:
     print("Unable to read file.")
     exit()
 
+print(f"chainGang[0]: {chainGang[0]}")
 print(f"Request: {sys.argv[1]}")
 print("Chainlist is")
+chainList = ""
 
 for i in range(len(chainGang)):
     if (i == 0):
@@ -68,6 +77,7 @@ for i in range(len(chainGang)):
     address, port = chainGang[i].split(" ")
     port = port[0: int(port)]
     chainGang[i] = (address, int(port))
+    chainList += str(chainGang[i]) + "\n"
     print(f"<{address}, {int(port)}>")
 
 randomNum = random.randint(1, int(chainGang[0]))
@@ -75,6 +85,7 @@ randomNum = random.randint(1, int(chainGang[0]))
 address, port = chainGang[randomNum]
 
 chainGang.pop(randomNum)
+numSS = chainGang[0]
 chainGang[0] = chainGang[0] - 1
 
 print(f"Next SS is <{address},{int(port)}>")
@@ -87,6 +98,7 @@ try:
     s.connect_ex((address, int(port)))
     print("Connected")
     s.send(str(chainGang).encode())
+    s.send(chainList.encode())
     print("Waiting for file")
     with open(fileName, 'w') as fp:
         while True:
