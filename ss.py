@@ -13,13 +13,14 @@
 import sys
 import os
 import selectors
+import threading
 import types
 import socket
 
 sel = selectors.DefaultSelector()
 
 host = socket.gethostname()
-port = 1050
+port = 1234
 
 if len(sys.argv) > 3 or len(sys.argv) == 2:
     print("Incorrect number of arguments.")
@@ -32,6 +33,7 @@ elif len(sys.argv) == 3 and sys.argv[1] != "-p":
 if len(sys.argv) == 3:
     port = sys.argv[2]
 
+"""
 #called when lsock receives a connection request from ss
 def newConnRequest(sock):
     print("New connection request")
@@ -59,30 +61,50 @@ def connReady(key, mask):
             print(f"Echoing {repr(data.outb)} to {data.addr}")
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
+"""
+
+def sendNext():
+    return
 
 print(f"ss hostname: {host}")
 print(f"ss port #: {port}")
 
 #listening socket
 lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-lsock.bind((host, int(port)))
+lsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+lsock.bind(("127.0.0.1", int(port)))
+print(f"Listening on port {port}")
+lsock.listen()
+
+while True:
+    conn, addr = lsock.accept()
+    fromClient = ''
+    
+    data = conn.recv(1024)
+    fromClient += data.decode()
+    print(f"fromClient: {fromClient}")
+
+    firstPos = fromClient[fromClient.find("'")+1:]
+    destURL = firstPos[:firstPos.find("'")]
+
+"""
 
 try:
     while True:
-        print(f"Listening on port {port}")
-        lsock.listen()
-        lsock.setblocking(False)
         sel.register(lsock, selectors.EVENT_READ, data=None)
         events = sel.select(timeout=None)
+        print("Event selected")
 
         for key, mask in events:
             if key.data is None:
                 newConnRequest(key.fileobj)
             else:
                 connReady(key, mask)
+
 except KeyboardInterrupt:
     print("Caught keyboard interrupt. Exiting.")
     exit()
 finally:
     sel.close()
 
+"""
